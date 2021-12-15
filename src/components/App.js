@@ -1,17 +1,34 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import Button from './Button';
 import './App.css'
+import { deleteCharFromExpression, evaluteExpression, resetResult } from '../redux/actions/expressionActionCreator';
 
-const App = ({result, expression}) => {
+const App = ({result, expression, pressedEqualToButton}) => {
+    const dispatch = useDispatch()
+
+    const handleEqualToButton = () => {
+        console.log('pressed = button');
+
+        dispatch(evaluteExpression(expression))
+    }
+
+    const handleDelButton = () => {
+        dispatch(deleteCharFromExpression())
+    }
+
+    const HandleACButton = () => {
+        dispatch(resetResult())
+    }
+
     return ( 
         <div className='container'>
             <div className='header'>
                 Calculator
             </div>
-            <input type="text" className='result' value={expression} readOnly />
+            <input type="text" className='result' value={pressedEqualToButton ? result : expression} readOnly />
             <div className='first-row'>
-                <Button  value="&radic;" className="global" />
+                <Button  value="A/C" onClick={HandleACButton} className="global" />
                 <Button  value="(" className="global" />
                 <Button  value=")" className="global" />
                 <Button  value="%" className="global" />
@@ -38,8 +55,8 @@ const App = ({result, expression}) => {
                 <div className='left'>
                     <Button value="0" className=" big" />
                     <Button value="." className="small" />
-                    <Button value="Del" className="red small white-text top-margin" />
-                    <Button value="=" className="green white-text big top-margin" />
+                    <Button value="Del" onClick={handleDelButton} className="red small white-text top-margin" />
+                    <Button value="=" onClick={handleEqualToButton} className="green white-text big top-margin" />
                 </div>
                 <div className='right'>
                     <Button value="+" className="global grey plus" />
@@ -53,7 +70,8 @@ const App = ({result, expression}) => {
 const mapStateToProps = (state) => {
     return {
         result: state.expression.result,
-        expression: state.expression.expression
+        expression: state.expression.expression,
+        pressedEqualToButton: state.expression.pressedEqualToButton
     }
 }
 

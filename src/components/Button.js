@@ -1,20 +1,27 @@
 import React from "react";
 import { connect, useDispatch } from "react-redux";
 import './Button.css';
-import { addToExpression } from '../redux/actions/expressionActionCreator'
-import { evaluate, hasNumericValue } from "mathjs";
+import { addToExpression, resetResult } from '../redux/actions/expressionActionCreator'
+import {  hasNumericValue } from "mathjs";
 
-const Button = ({value, className, expression}) => {
+
+const Button = ({value, className, expression, pressedEqualToButton, onClick}) => {
     const dispatch = useDispatch()
    
     const handleOnClick = () => {
+        // after the a result is produce to reset the state of application so we can use the calculator again and again
+        if (pressedEqualToButton) {
+            dispatch(resetResult())
+            return ;
+        }
+        // no dispatching action addtoexpression when u try add operator one after another
         if ( (!(hasNumericValue(expression.at(-1))) && !(hasNumericValue(value))) && !(value === '(' || value === '||') ){
             return
         }
         dispatch(addToExpression(value))
     }
     return (
-        <button onClick={handleOnClick} className={className}>
+        <button onClick={onClick? onClick : handleOnClick} className={className}>
             {value}
         </button >
     )
@@ -22,7 +29,8 @@ const Button = ({value, className, expression}) => {
 
 const mapStateToProps = (state) => {
     return {
-        expression : state.expression.expression
+        expression : state.expression.expression,
+        pressedEqualToButton: state.expression.pressedEqualToButton
     }
 }
 
